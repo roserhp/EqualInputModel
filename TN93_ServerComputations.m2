@@ -1,4 +1,3 @@
-restart
 K=frac(QQ[p_A,p_C,p_G,p_T]);
 gensp={p_((A,A),(A,A)), p_((A,A),(A,T)), p_((A,A),(T,A)), p_((A,A),(T,G)), p_((A,A),(G,T)), p_((A,A),(T,T)), p_((A,A),(G,G)), p_((A,A),(A,G)), p_((A,A),(G,A)), p_((A,A),(C,C)),
       p_((A,A),(A,C)), p_((A,A),(C,A)), p_((A,A),(C,G)), p_((A,A),(G,C)), p_((A,A),(T,C)), p_((A,A),(C,T)), p_((A,T),(A,A)), p_((A,T),(A,T)), p_((A,T),(T,A)), p_((A,T),(T,G)),
@@ -90,3 +89,7 @@ p_((A,A),(T,T))+((-16*p_A-16*p_G)/(p_A*p_G))*l_(1,A)*l_(2,A)*l_(3,T)*l_(4,T)*l_(
 J=time eliminate(drop(gens R,256),I);
 
 "EliminationIdeal.txt" << toString J << endl << close
+
+
+
+
