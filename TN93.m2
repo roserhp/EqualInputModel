@@ -31,6 +31,7 @@ D=Hinv*M*H
 
 1/((p_C+p_T)*(p_A+p_C+p_G+p_T))*((p_C+p_T)*D_(0,0)+(p_A+p_G)*D_(2,2)-(p_A+p_C+p_G+p_T)*D_(1,1))
 
+
 --Flattening
 flattq=mutableMatrix(R,16,16)
 for i to 15 do (for j to 15 do 
@@ -74,6 +75,11 @@ Rl=K[l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
 f=map(Rl,R,{1/(p_A+p_C+p_G+p_T)*(l_(5,A)-l_(5,G)),
 1/((p_A+p_G)*(p_A+p_C+p_G+p_T))*((p_A+p_G)*l_(5,A)+(p_C+p_T)*l_(5,G)-(p_A+p_C+p_G+p_T)*l_(5,T)),
 1/((p_C+p_T)*(p_A+p_C+p_G+p_T))*((p_C+p_T)*l_(5,A)+(p_A+p_G)*l_(5,G)-(p_A+p_C+p_G+p_T)*l_(5,C))})
+
+--Marta's parametrization
+f=map(Rl,R,{(l_(5,A)-l_(5,G)),
+1/(p_A+p_G)*((p_A+p_G)*l_(5,A)+(p_C+p_T)*l_(5,G)-l_(5,T)),
+1/(p_C+p_T)*((p_C+p_T)*l_(5,A)+(p_A+p_G)*l_(5,G)-l_(5,C))})
 
 --Check values of b,c,e depending on pi
 L={1/(p_A+p_C+p_G+p_T)*(l_(5,A)-l_(5,G)),
@@ -253,3 +259,5 @@ netList support I
 sub(I,{p_A=>1/4,p_C=>1/4}); --works
 sub(I,{p_A=>1/4,p_C=>1/4,p_G=>1/4}); --Process M2 exited abnormally with code 1
 IJC=sub(I,{p_A=>1/4,p_C=>1/4,p_G=>1/4,p_T=>1/4,l_(5,A)=>1,l_(5,G)=>l_(5,C),l_(5,T)=>l_(5,C)});
+
+
