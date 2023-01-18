@@ -8,6 +8,8 @@ K=frac(QQ[p_A,p_C,p_G,p_T]);
 Rl=K[l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
 --basis
 Hl=transpose(matrix{{4,4,4,4},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+--Hl=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+
 --substitution matrix in the eigenvalues
 Ml=Hl*diagonalMatrix(Rl,4,4,{l_(5,A),l_(5,C),l_(5,G),l_(5,T)})*inverse(Hl)
 --Flattening 12|34 for identity at the leaves
@@ -21,6 +23,19 @@ flattql=matrix(flattql);
 flattQl=time (transpose(Hl)**transpose(Hl))*flattql*(Hl**Hl);
 --Quasi-block form
 blockQl=flattQl_{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7}^{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7};
+
+-------------------------------
+--Examples for a given pi
+-------------------------------
+Rex=K[lA,lC,lG,lT];
+f=map(Rex,Rl,gens Rex);
+blockEx=f(blockQl);
+sub(blockEx,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24})
+sub(blockEx,{p_A=>1/4,p_C=>1/4,p_G=>1/4,p_T=>1/4})
+
+------------------------------
+-- Checks
+------------------------------
 --Check homogeneity
 isHomogeneous(ideal flatten entries blockQl) --true
 betti(ideal flatten entries blockQl) --linear in lambda (80 non-zero entries)
@@ -61,6 +76,8 @@ pTN92=matrix {{256*l_(5,A), 0, 0, 0, 0, ((16*p_A+16*p_G)/(p_A*p_G))*l_(5,A), (16
 
 --It's enough to assume that p_A+p_C+p_G+p_T=1 to observe equality:
 sub(blockQl-pTN92,{p_A=>1-p_C-p_G-p_T}) --0
+---------------------------------------------------------------------------
+----------------------------------------------------------------------------
 
 --Ring for general quartet
 Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T),l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
@@ -70,9 +87,13 @@ Q=sub(blockQl,Rgeneral);
 q=matrix toList apply(0..15,i->toList apply(0..15,j->l_(1,(s_i)_0)*l_(2,(s_i)_1)*l_(3,(s_j)_0)*l_(4,(s_j)_1)*Q_(i,j)));
 --Example
 q_{0,1,2,3,4}^{0,1,2,3,4}
+sub(q,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24})
+rank q_{1,2,3,4}^{1,2,3,4}
+
 --Check homogeneity
 isHomogeneous(ideal flatten entries q) --true
 betti(ideal flatten entries q) --quintic in lambda (80 non-zero entries)
+
 
 varp=flatten toList apply(0..15,i->toList apply(0..15,j->(symbol p)_(s_i,s_j)));
 S=QQ[varp];

@@ -1,4 +1,6 @@
-K=frac(QQ[p_A,p_C,p_G,p_T]);
+restart
+K=frac((ZZ/1181)[p_A,p_C,p_G,p_T]);
+--K=frac(QQ[p_A,p_C,p_G,p_T]);
 gensp={p_((A,A),(A,A)), p_((A,A),(A,T)), p_((A,A),(T,A)), p_((A,A),(T,G)), p_((A,A),(G,T)), p_((A,A),(T,T)), p_((A,A),(G,G)), p_((A,A),(A,G)), p_((A,A),(G,A)), p_((A,A),(C,C)),
       p_((A,A),(A,C)), p_((A,A),(C,A)), p_((A,A),(C,G)), p_((A,A),(G,C)), p_((A,A),(T,C)), p_((A,A),(C,T)), p_((A,T),(A,A)), p_((A,T),(A,T)), p_((A,T),(T,A)), p_((A,T),(T,G)),
       p_((A,T),(G,T)), p_((A,T),(T,T)), p_((A,T),(G,G)), p_((A,T),(A,G)), p_((A,T),(G,A)), p_((A,T),(C,C)), p_((A,T),(A,C)), p_((A,T),(C,A)), p_((A,T),(C,G)), p_((A,T),(G,C)),
