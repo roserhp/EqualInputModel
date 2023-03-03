@@ -12,7 +12,22 @@ M2=sub(M1,{b_1=>b_i,c_1=>c_i,e_1=>e_i})
 i=3
 M3=sub(M1,{b_1=>b_i,c_1=>c_i,e_1=>e_i})
 
+--Is the product of two TN93 matrices a TN93 matrix with different parameters?
+M=M1*M2
+
+M_(1,0)
+M1_(1,0)
+1/p_T*M_(1,3)
+M1_(1,3)
+M1_(3,1)
+1/p_C*M_(3,1)
+1/p_C*M_(3,1)==1/p_T*M_(1,3)
+
 --Identity on the leaves
+restart
+K=frac(QQ[p_A,p_C,p_G,p_T]);
+R=K[b_1,c_1,e_1,b_2,c_2,e_2,b_3,c_3,e_3];
+OE={A,C,G,T}
 M1=id_(R^4)
 M2=M1
 M3=M1
@@ -53,7 +68,31 @@ length zeroEntries --45
 
 "3leavesBasisHzeroEntries.txt" << netList zeroEntries << endl << close
 
--------------------------------------------------------------------------------
+Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T)]
+QBAR=sub(pbar^(positions(flatten entries pbar,i->i!=0)),Rgeneral);
+PBAR=toList apply(nonZeroEntries,i->l_(1,i_0)*l_(2,i_1)*l_(3,i_2)*QBAR_(position(nonZeroEntries,j->j==i),0));
+
+netList PBAR
+
+varp=toList apply(nonZeroEntries,i->(symbol p)_i);
+S=K[varp]; --QQ or K??
+f=map(Rgeneral,S,PBAR);
+f(p_(A,A,A))
+f(p_(T,T,T))
+test=time trim kernel f;
+--16 sec aprox
+betti test
+netList test_*
+codim test
+dim test
+I2=ideal toList apply(0..8,i->test_i);
+netList I2_*
+codim I2
+CI=time regSeqInIdeal(test,9);
+
+
+apply(flatten entries gens test,i->length terms i)
+------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 --Checks with original basis
 --uniform distribution

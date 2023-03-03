@@ -91,3 +91,87 @@ length select(zeroEntries,i->i_0==T and i_1==G) --11
 length select(zeroEntries,i->i_0==T and i_1==T) --6
 netList select(zeroEntries,i->i_0==T and i_1==T) 
 
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+
+restart
+K=frac(QQ[p_A,p_C,p_G,p_T]);
+Rl=K[l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
+Hl=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+--sanity check
+inverse (transpose Hl)
+Ml=Hl*diagonalMatrix(Rl,4,4,{l_(5,A),l_(5,C),l_(5,G),l_(5,T)})*inverse(Hl)
+--sanity check
+inverse(Hl)*Ml*Hl
+
+--identidad en las hojas
+M1=id_(Rl^4)
+M2=M1
+M3=M1
+M4=M1
+
+OE={A,C,G,T}
+
+S=sort elements (set OE)^**4/splice/splice
+netList S
+
+pp=mutableMatrix(Rl,256,1)
+
+for i to 255 do (
+	pp_(i,0)=sum flatten toList apply(OE,k->apply(OE,kk->p_k*M1_(position(OE,l->l==k),position(OE,l->l==(S_i)_0))*M2_(position(OE,l->l==k),position(OE,l->l==(S_i)_1))*M3_(position(OE,l->l==kk),position(OE,l->l==(S_i)_2))*M4_(position(OE,l->l==kk),position(OE,l->l==(S_i)_3))*Ml_(position(OE,l->l==k),position(OE,l->l==kk))))
+) 
+
+pp=matrix pp;
+netList (flatten entries pp)
+
+H4=(transpose Hl)**(transpose Hl)**(transpose Hl)**(transpose Hl);
+
+pbar=time H4*pp;
+netList toList apply(0..255,i->(S_i,pbar_(i,0)))
+--only non-monomial entries
+nonMonomial=select(S,i->(length terms pbar_(position(S,j->j==i),0)>1))
+length nonMonomial
+nonZeroEntries=S_(positions(flatten entries pbar,i->i!=0))
+length nonZeroEntries 
+monomialNonZeroEntries=select(nonZeroEntries,i->(length terms pbar_(position(S,j->j==i),0)==1))
+length monomialNonZeroEntries
+
+Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T),l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
+
+QBAR=sub(pbar^(positions(flatten entries pbar,i->i!=0)),Rgeneral);
+
+PBAR=toList apply(nonZeroEntries,i->l_(1,i_0)*l_(2,i_1)*l_(3,i_2)*l_(4,i_3)*QBAR_(position(nonZeroEntries,j->j==i),0));
+
+netList PBAR
+
+varp=toList apply(nonZeroEntries,i->(symbol p)_i);
+S=K[varp]; 
+f=map(Rgeneral,S,PBAR);
+f(p_(A,A,A,A))
+f(p_(A,T,T,T))
+I=time kernel f;
+betti I
+J=trim I;
+betti J
+
+--Try to compute first the monomial parametrization: get rid of combinations of CC,GG,TT
+toricPBAR=toList apply(monomialNonZeroEntries,i->l_(1,i_0)*l_(2,i_1)*l_(3,i_2)*l_(4,i_3)*QBAR_(position(nonZeroEntries,j->j==i),0));
+netList toricPBAR
+
+
+toricvarp=toList apply(monomialNonZeroEntries,i->(symbol p)_i);
+toricS=K[toricvarp]; 
+toricf=map(Rgeneral,toricS,toricPBAR);
+toricf(p_(A,A,A,A))
+toricf(p_(A,T,T,T))
+toricI=time kernel toricf;
+Too many heap sections: Increase MAXHINCR or MAX_HEAP_SECTS
+Aborted (core dumped)
