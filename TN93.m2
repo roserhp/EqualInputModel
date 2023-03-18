@@ -18,8 +18,9 @@ for i to 3 do print sum flatten entries M^{0}
 for i to 3 do print sum flatten entries M_{0}
 
 --Basis that provides many 0's and has signs correponding to Hadamart matrix
-H=transpose(matrix{{4,4,4,4},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
- 
+--H=transpose(matrix{{4,4,4,4},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+H=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+
 Hinv=inverse H
 D=Hinv*M*H
 
@@ -44,6 +45,7 @@ flattQ=time (transpose(H)**transpose(H))*flattq*(H**H);
 
 --Quasi-block form
 blockQ=flattQ_{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7}^{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7};
+
 
 B1=blockQ^{1,2,3,4}_{1,2,3,4}
 rank B1 
@@ -107,8 +109,19 @@ flattql=matrix(flattql);
 --Change of basis
 flattQl=time (transpose(Hl)**transpose(Hl))*flattql*(Hl**Hl);
 
+--checks: 
+rank flattQl_{0,1,5,9}
+flattId=sub(flattQl,{l_(5,A)=>1,l_(5,C)=>1,l_(5,G)=>1,l_(5,T)=>1});
+rank flattId
+rank flattId_{0,1,5,9}
+
 --Quasi-block form
 blockQl=flattQl_{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7}^{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7};
+blockQl;
+nucleo=time ker blockQl;
+nucleoMatrix=syz blockQl
+netList toList apply(0..11,i->nucleoMatrix_i)
+syz nucleoMatrix
 
 B1l=blockQl^{1,2,3,4}_{1,2,3,4}
 rank B1l 
@@ -221,11 +234,33 @@ matrix {{256, 0, 0, 0, 0, 160, 1024/15, 0, 0, 432, 0, 0, 0, 0, 0, 0}, {0, -160*l
 ------------------- Parametrization of TN93 in the eigenvalues ----------------
 ------------------------------------ general ----------------------------------
 -------------------------------------------------------------------------------
+restart
+K=frac(QQ[p_A,p_C,p_G,p_T]);
 Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T),l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
 
 s={(A,A),(A,T),(T,A),(T,G),(G,T),(T,T),(G,G),(A,G),(G,A),(C,C),(A,C),(C,A),(C,G),(G,C),(T,C),(C,T)}
 Q=sub(blockQl,Rgeneral);
 q=matrix toList apply(0..15,i->toList apply(0..15,j->l_(1,(s_i)_0)*l_(2,(s_i)_1)*l_(3,(s_j)_0)*l_(4,(s_j)_1)*Q_(i,j)));
+time rank q
+
+nucleoQker=time ker q;
+nucleoQker
+nucleoQ=time syz q;
+netList toList apply(0..42,i->nucleoQ_i)
+
+nucleoQsyz=time syz nucleoQ;
+
+----
+Kaux=frac(QQ[p_A,p_C,p_G,p_T,l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T)])
+Rsocorro=Kaux[l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
+qSOS=sub(q,Rsocorro);
+qSOS_{1,2}^{1,2}
+nucleoSOS=time syz qSOS;
+netList toList apply(0..11,i->nucleoSOS_i)
+
+(l_(3,G)*l_(4,A)/(l_(3,A)*l_(4,G)))*nucleoSOS_(0,6)==nucleoSOS_(0,7)
+
+----
 
 varp=flatten toList apply(0..15,i->toList apply(0..15,j->(symbol p)_(s_i,s_j)));
 S=QQ[varp];
@@ -261,3 +296,14 @@ sub(I,{p_A=>1/4,p_C=>1/4,p_G=>1/4}); --Process M2 exited abnormally with code 1
 IJC=sub(I,{p_A=>1/4,p_C=>1/4,p_G=>1/4,p_T=>1/4,l_(5,A)=>1,l_(5,G)=>l_(5,C),l_(5,T)=>l_(5,C)});
 
 
+----------------------
+Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T),l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
+i=1
+D1=diagonalMatrix({l_(i,A),l_(i,C),l_(i,G),l_(i,T)})
+i=2
+D2=diagonalMatrix({l_(i,A),l_(i,C),l_(i,G),l_(i,T)})
+
+D1**D2
+
+det q_{5,6,9}^{5,6,9};
+rank q_{5,6,9}^{5,6,9}

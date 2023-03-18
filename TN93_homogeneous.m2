@@ -7,11 +7,12 @@ restart
 K=frac(QQ[p_A,p_C,p_G,p_T]);
 Rl=K[l_(5,A),l_(5,C),l_(5,G),l_(5,T)]
 --basis
-Hl=transpose(matrix{{4,4,4,4},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
---Hl=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+--Hl=transpose(matrix{{4,4,4,4},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
+Hl=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A+p_G),-1/(p_C+p_T)},{1/p_A,0,-1/p_G,0}});
 
 --substitution matrix in the eigenvalues
 Ml=Hl*diagonalMatrix(Rl,4,4,{l_(5,A),l_(5,C),l_(5,G),l_(5,T)})*inverse(Hl)
+inverse(Hl)*Ml*Hl
 --Flattening 12|34 for identity at the leaves
 OE={A,C,G,T}
 flattql=mutableMatrix(Rl,16,16)
@@ -23,6 +24,14 @@ flattql=matrix(flattql);
 flattQl=time (transpose(Hl)**transpose(Hl))*flattql*(Hl**Hl);
 --Quasi-block form
 blockQl=flattQl_{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7}^{0,3,12,14,11,15,10,2,8,5,1,4,9,6,13,7};
+blockQl_{0,1,5,9}
+
+rank blockQl_{0,1,5,9}
+blockId=sub(blockQl,{l_(5,A)=>1,l_(5,C)=>1,l_(5,G)=>1,l_(5,T)=>1});
+rank blockId
+rank blockId_{0,1,5,9}
+rank blockId_{0,1,5,9}^{0,5,6,9}
+blockId_{5,6,9}^{5,6,9}
 
 -------------------------------
 --Examples for a given pi
@@ -86,6 +95,7 @@ s={(A,A),(A,T),(T,A),(T,G),(G,T),(T,T),(G,G),(A,G),(G,A),(C,C),(A,C),(C,A),(C,G)
 Q=sub(blockQl,Rgeneral);
 q=matrix toList apply(0..15,i->toList apply(0..15,j->l_(1,(s_i)_0)*l_(2,(s_i)_1)*l_(3,(s_j)_0)*l_(4,(s_j)_1)*Q_(i,j)));
 --Example
+blockQl_{0,1,2,3,4}^{0,1,2,3,4}
 q_{0,1,2,3,4}^{0,1,2,3,4}
 sub(q,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24})
 rank q_{1,2,3,4}^{1,2,3,4}
@@ -97,6 +107,7 @@ betti(ideal flatten entries q) --quintic in lambda (80 non-zero entries)
 
 varp=flatten toList apply(0..15,i->toList apply(0..15,j->(symbol p)_(s_i,s_j)));
 S=QQ[varp];
+length gens S
 
 P=transpose genericMatrix(S,p_((A,A),(A,A)),16,16)
 
@@ -116,3 +127,4 @@ toString I
 
 --Ideal definition for TN93
 J=time eliminate(apply(gens Rgeneral,i->sub(i,RS)),I);
+
