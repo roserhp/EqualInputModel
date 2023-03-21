@@ -241,3 +241,4 @@ Ht1=inverse transpose Hpi
 D=diagonalMatrix({1/2,1/3,1/8,1/24})
 G=inverse D
 for i to 3 do for j from i to 3 do print (i,j,(transpose(Ht1_{i})*G*Ht1_{j})_(0,0))
+--Issues with K and substituting, issues with RR when considering roots
