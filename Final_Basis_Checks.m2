@@ -31,7 +31,8 @@ restart
 
 --Ring declaration. Warning: for some operations it will be needed to consider a ring on QQ including parameters pi
 K=frac(QQ[p_1,p_2,p_3,p_4]);
-R=K[l1_1,l1_2,l1_3,l1_4,l2_1,l2_2,l2_3,l2_4,l3_1,l3_2,l3_3,l3_4];
+R=K[l_(1,1)..l_(3,4)];
+gens R
 
 --Matrices with identity at the leaves
 M1=id_(R^4)
@@ -60,9 +61,10 @@ A=inverse(transpose H) --not exactly the same matrix because we are using p1+p2+
 B=sub(A,K)*diagonalMatrix{p_1+p_2+p_3+p_4,p_1+p_2+p_3+p_4,1,1} --using p1+p2+p3+p4=1, matches paper
 
 --Matrices with anything at the leaves
-D1=diagonalMatrix{l1_1,l1_2,l1_3,l1_4}
-D2=diagonalMatrix{l2_1,l2_2,l2_3,l2_4}
-D3=diagonalMatrix{l3_1,l3_2,l3_3,l3_4}
+
+D1=diagonalMatrix toList(l_(1,1)..l_(1,4))
+D2=diagonalMatrix toList(l_(2,1)..l_(2,4))
+D3=diagonalMatrix toList(l_(3,1)..l_(3,4))
 
 M1g=H*D1*(inverse H)
 M2g=H*D2*(inverse H)
@@ -74,7 +76,7 @@ qbar=((transpose H)**(transpose H)**(transpose H))*qq
 pbar=(D1**D2**D3)*qbar
 
 --Double-checking relation between identity at the leaves and general case
-qbar_(position(S,i->i==(2,2,2)),0)*l1_2*l2_2*l3_2==pbar_(position(S,i->i==(2,2,2)),0)
+qbar_(position(S,i->i==(2,2,2)),0)*l_(1,2)*l_(2,2)*l_(3,2)==pbar_(position(S,i->i==(2,2,2)),0)
 
 --Table for pi-inner product of standard basis and basis B
 Dpi=diagonalMatrix{p_1,p_2,p_3,p_4}
@@ -91,4 +93,21 @@ for j to 3 do print factor (transpose B_{j}*inverse(Dpi)*B_{j})_(0,0) -- factors
 H*diagonalMatrix{1,(p_1+p_2)*(p_3+p_4),p_3*p_4/(p_3+p_4),p_1*p_2/(p_1+p_2)} --REVISAR!!!
 
 
+---VANISHING IDEAL FOR THE TRIPOD
 
+--declare ring with p variables (19 nonvanishing tensor coordinates)
+nonZeroEntries=S_(positions(flatten entries pbar,i->i!=0))
+PBAR=flatten entries pbar^(positions(flatten entries pbar,i->i!=0))
+netList PBAR
+varp=toList apply(nonZeroEntries,i->(symbol p)_i);
+Rp=K[varp]; 
+gens Rp
+--Vanishing ideal as kernel of the map
+f=map(R,Rp,PBAR);
+f(p_(1,1,1))
+f(p_(4,4,4))
+I=time trim kernel f;
+-- used 4.88333 seconds
+betti I
+
+"3leavesVanishingIdeal_FinalBasis.txt" << toString I << endl << close
