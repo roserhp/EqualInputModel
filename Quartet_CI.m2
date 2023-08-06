@@ -123,7 +123,7 @@ length rk1G --4
 apply(rk1G,i->f(i))
 
 rk1=rk1C|rk1G|rk1T
-length rk1
+length rk1--28
 
 -- Rank-2 invariants
 
@@ -228,6 +228,21 @@ time rank jac --68
 p0=flatten entries sub(sub(sub(qbar,R),apply(gens R,i->i=>1)),Rx);
 jacId=sub(jac,matrix{p0});
 time rank jacId --68
+ -- used 0.779021 seconds
 
-mins=time minors(68,jacId);
-mins
+L=time toList apply(0..255,i->(i,rank jacId^(toList (0..i))));
+-- used 114.238 seconds
+
+netList L
+
+select(0..255,l->(L_l)_1!=(L_(l-1)_1))
+length select(0..255,l->(L_l)_1!=(L_(l-1)_1))
+
+select(0..255,l->(L_l)_1!=(L_(l-1)_1))
+
+minJacId=jacId^(toList select(0..255,l->(L_l)_1!=(L_(l-1)_1)));
+rank minJacId
+mins=time det minJacId;
+
+J=sub(minJacId,{p_1=>7/24,p_2=>9/24,p_3=>5/24,p_4=>3/24})
+det J!=0 --true
