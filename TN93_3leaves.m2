@@ -62,6 +62,7 @@ length zeroEntries --45
 Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T)]
 QBAR=sub(pbar^(positions(flatten entries pbar,i->i!=0)),Rgeneral);
 toString QBAR
+netList flatten entries QBAR
 PBAR=toList apply(nonZeroEntries,i->l_(1,i_0)*l_(2,i_1)*l_(3,i_2)*QBAR_(position(nonZeroEntries,j->j==i),0));
 netList PBAR
 
@@ -70,10 +71,21 @@ S=K[varp];
 f=map(Rgeneral,S,PBAR);
 f(p_(A,A,A))
 f(p_(T,T,T))
+J=time kernel f;
+-- used 0. seconds
+betti J
 I=time trim kernel f;
 --16 sec aprox
 "3leavesVanishingIdeal.txt" << toString I << endl << close
 
+PBARpi=toList apply(PBAR,i->sub(i,{p_A=>1/4,p_C=>1/4,p_G=>1/4,p_T=>1/4}))
+fpi=map(Rgeneral,S,PBARpi);
+fpi(p_(A,A,A))
+fpi(p_(T,T,T))
+Ipi=time trim kernel fpi;
+betti Ipi
+codim Ipi
+netList Ipi_*
 ------------------------------------------------------------------------------------------
 ---------------------------- STUDY OF THE VANISHING IDEAL --------------------------------
 ------------------------------------------------------------------------------------------
@@ -84,14 +96,39 @@ K=frac(QQ[p_A,p_C,p_G,p_T]);
 S=K[varp]; 
 I=value get "3leavesVanishingIdeal.txt";
 betti I
+dim I,codim I
 netList I_*
+
+PV=Proj(S/I); 
+dim PV --9
+V=Spec(S/I); 
+dim V --10
+-------------------------------
+J=trim(I+ideal{p_(A,A,A)-1});
+dim J,codim J
+netList J_*
+netList apply(drop(flatten entries gens J,1),i->(support i,apply(terms i,j->degree j)))
+JJ=trim ideal drop(flatten entries gens J,1);
+dim JJ,codim JJ
+SS=K[drop(varp,1)];
+JJ=sub(JJ,SS);
+dim JJ,codim JJ
+netList JJ_*
+------------------------------
+
 
 --Identity point: lambda's=1 in the parametrization
 QBAR=matrix {{p_A+p_C+p_G+p_T}, {(p_C+p_T)/(p_C*p_T)}, {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(p_A+p_G)/(p_A*p_G)}, {(p_C+p_T)/(p_C*p_T)}, {(p_C+p_T)/(p_C*p_T)},
       {(-p_C^2+p_T^2)/(p_C^2*p_T^2)}, {(-1)/(p_C*p_T)}, {(-1)/(p_C*p_T)}, {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(-1)/(p_C*p_T)},
       {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(-p_A^2+p_C^2-2*p_A*p_G-p_G^2+2*p_C*p_T+p_T^2)/(p_A^2*p_C^2+2*p_A*p_C^2*p_G+p_C^2*p_G^2+2*p_A^2*p_C*p_T+4*p_A*p_C*p_G*p_T+2*p_C
       *p_G^2*p_T+p_A^2*p_T^2+2*p_A*p_G*p_T^2+p_G^2*p_T^2)}, {1/(p_A*p_G)}, {(p_A+p_G)/(p_A*p_G)}, {1/(p_A*p_G)}, {(p_A+p_G)/(p_A*p_G)}, {1/(p_A*p_G)}, {(-p_A^2+p_G^2)/(p_A^2*p_G^2)}};
+--check id point belongs to the ideal
 sub(I,transpose QBAR)
+
+P=ideal toList apply(0..18,i->(gens S)_i-sub(QBAR_(i,0),S));
+netList P_*
+isPrime P --doesn't work for K
+IL=time localize (I,P);
 
 -- deg 2
 I2=ideal toList apply(0..8,i->I_i);
@@ -116,6 +153,9 @@ CI=ideal{I_0,I_1,I_2,I_3,I_4,I_6,I_13,I_28,I_37};
 codim CI --9
 
 jac=jacobian I;
+--28/3: CHECK THE FOLLOWING 2 COMPUTATIONS IN CRM COMPUTER
+time rank jac
+sing=time minors(9,jac);
 QBAR=matrix {{p_A+p_C+p_G+p_T}, {(p_C+p_T)/(p_C*p_T)}, {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(p_A+p_G)/(p_A*p_G)}, {(p_C+p_T)/(p_C*p_T)}, {(p_C+p_T)/(p_C*p_T)},
       {(-p_C^2+p_T^2)/(p_C^2*p_T^2)}, {(-1)/(p_C*p_T)}, {(-1)/(p_C*p_T)}, {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(-1)/(p_C*p_T)},
       {(p_A+p_C+p_G+p_T)/(p_A*p_C+p_C*p_G+p_A*p_T+p_G*p_T)}, {(-p_A^2+p_C^2-2*p_A*p_G-p_G^2+2*p_C*p_T+p_T^2)/(p_A^2*p_C^2+2*p_A*p_C^2*p_G+p_C^2*p_G^2+2*p_A^2*p_C*p_T+4*p_A*p_C*p_G*p_T+2*p_C
@@ -253,6 +293,38 @@ time isCM(S2/Ipi)
 time isCM(Ipi)
 time depth(S2/Ipi)
 time dim Ipi
+nPpi=sub(sub(P,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24}),S2);
+netList Ppi_*
+isPrime Ppi --true
+dim Ppi, codim Ppi
+CIpi=sub(sub(CI,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24}),S2);
+codim CIpi --9
+CIpi2=sub(sub(CI2,{p_A=>1/2,p_C=>1/3,p_G=>1/8,p_T=>1/24}),S2);
+codim CIpi2 --9
+
+loadPackage "LocalRings"
+LS2pi=localRing(S2,Ppi)
+isWellDefined(LS2pi) --true
+ILpi=promote(Ipi,LS2pi);
+betti ILpi
+betti (trim ILpi)
+netList (trim ILpi)_*
+CIpi=promote(CIpi,LS2pi);
+betti CIpi
+betti (trim CIpi)
+netList (trim CIpi)_*
+CIpi==ILpi --true
+
+CIpi2=promote(CIpi2,LS2pi);
+netList (trim CIpi2)_*
+CIpi==CIpi2 --true
+CIpi===CIpi2
+
+LS2=localRing(S,P)
+isWellDefined(LS2) --NO APPLICABLE STRATEGY FOR MINIMAL PRIMES
+
+ILpi=time localize (Ipi,Ppi); --extension + contraction, ideal in S2
+ILpi==Ipi --true
 
 codim ideal{Ipi_0,Ipi_1,Ipi_2,Ipi_3,Ipi_4,Ipi_6,Ipi_13,Ipi_28,Ipi_37} --9
 CIp=ideal{Ipi_0,Ipi_1,Ipi_2,Ipi_3,Ipi_4,Ipi_6,Ipi_13,Ipi_28,Ipi_37};
@@ -261,7 +333,12 @@ dec=time minimalPrimes CIp;
 length dec
 radical(CIp)==CIp
 
-------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------
+--Dimensionality check
+PVpi=Proj(S2/Ipi); 
+dim PVpi
+Vpi=Spec(S2/Ipi);
+dim Vpi --10
 
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------

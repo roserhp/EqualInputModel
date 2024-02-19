@@ -24,7 +24,6 @@ length monomialNonZeroEntries --225
 --Example:
 qbar_(position(S,j->j==(A,A,A,T,T)),0)
 
-
 Rgeneral=K[l_(1,A),l_(1,C),l_(1,G),l_(1,T),l_(2,A),l_(2,C),l_(2,G),l_(2,T),l_(3,A),l_(3,C),l_(3,G),l_(3,T),l_(4,A),l_(4,C),l_(4,G),l_(4,T),l_(5,A),l_(5,C),l_(5,G),l_(5,T),l_(6,A),l_(6,C),l_(6,G),l_(6,T),l_(7,A),l_(7,C),l_(7,G),l_(7,T)]
 qbar=sub(qbar,Rgeneral);
 pbar=transpose matrix{toList apply(S,i->l_(1,i_0)*l_(2,i_1)*l_(3,i_2)*l_(4,i_3)*l_(5,i_4)*qbar_(position(S,j->j==i),0))};
@@ -153,5 +152,5 @@ H=transpose(matrix{{1,1,1,1},{0,1/p_C,0,-1/p_T},{1/(p_A+p_G),-1/(p_C+p_T),1/(p_A
 H5=(transpose H)**(transpose H)**(transpose H)**(transpose H)**(transpose H);
 qbar=time H5*qq;
 -- used 421.312 seconds
-"5leaves_tensor_id_basisH.txt" << qbar << endl << close
+"5leaves_tensor_id_basisH.txt" << toString qbar << endl << close
 
